@@ -1,8 +1,9 @@
 class VideosController < ApplicationController
   def index
     videos = Video.all
-    
-    render json: videos, status: :ok
+    videos = videos.joins(:category).where(category: {name: params[:category_name]}) if params[:category_name].present?
+      
+    render json: videos, status: :ok, each_serializer: Videos::Index::VideoSerializer
   end
   
   def show
@@ -23,6 +24,6 @@ class VideosController < ApplicationController
 	private
 
 	def video_params
-		params.require(:video).permit(:name, :description, :url, :user_id)
+		params.require(:video).permit(:name, :description, :url, :user_id, :category_id)
 	end
 end
